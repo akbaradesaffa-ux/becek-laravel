@@ -1,0 +1,337 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --primary: #6F4E37;
+    --primary-dark: #3d2b1f;
+    --primary-light: #fdf8f5;
+    --cafe-color: #6F4E37;
+    --warkop-color: #C8A882;
+    --bg-main: #f8fafc;
+    --white: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --radius: 20px;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.06);
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'Plus Jakarta Sans', sans-serif; 
+}
+
+body { 
+    background: var(--bg-main); 
+    display: flex;
+    flex-direction: column; 
+    min-height: 100vh; 
+}
+
+/* ========== NAVBAR ========== */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--white);
+    padding: 18px 8%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    position: sticky;
+    top: 0;
+    z-index: 99;
+}
+
+.brand-logo-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.brand-logo-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 2px 8px rgba(111, 78, 55, 0.2);
+}
+
+.brand-logo-text {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    padding: 8px 4px;
+}
+
+.nav-menu a:hover { color: var(--primary); }
+.nav-menu .active a {
+    color: var(--primary);
+    border-bottom: 3px solid var(--primary);
+}
+
+.user-profile {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.btn-logout {
+    text-decoration: none;
+    background: #fecaca;
+    color: #dc2626;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: #dc2626;
+    color: white;
+}
+
+/* ========== MAIN CONTENT ========== */
+.main-content { 
+    flex: 1; 
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px 5%; 
+}
+
+.header-title {
+    margin-bottom: 30px;
+}
+
+.header-title h1 { 
+    font-weight: 800; 
+    color: var(--text-main); 
+    font-size: 1.6rem; 
+}
+
+.header-title p { 
+    color: var(--text-muted); 
+    font-size: 0.95rem; 
+    margin-top: 4px; 
+}
+
+/* ========== STATS GRID ========== */
+.stats-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    gap: 24px; 
+    margin-bottom: 32px; 
+}
+
+.stat-card { 
+    background: var(--white); 
+    padding: 25px; 
+    border-radius: var(--radius); 
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
+    box-shadow: var(--shadow); 
+}
+
+.stat-icon { 
+    width: 56px; 
+    height: 56px; 
+    background: var(--primary-light); 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 1.6rem; 
+    border-radius: 14px; 
+    flex-shrink: 0;
+}
+
+.cafe-icon { background: #fdf8f5; }
+.warkop-icon { background: #fdf5ec; }
+
+.stat-info h3 { 
+    font-size: 1.9rem; 
+    color: var(--text-main); 
+    font-weight: 800; 
+    line-height: 1;
+}
+
+.stat-info p { 
+    color: var(--text-muted); 
+    font-size: 0.88rem; 
+    margin-top: 4px;
+}
+
+/* ========== CHART SECTION ========== */
+.chart-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+.chart-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+}
+
+.chart-header h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.chart-header p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.chart-body {
+    display: flex;
+    align-items: center;
+    gap: 60px;
+}
+
+/* Donut Chart */
+.donut-wrapper {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    flex-shrink: 0;
+}
+
+.donut-wrapper canvas {
+    width: 220px !important;
+    height: 220px !important;
+}
+
+.donut-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+
+.donut-total {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+.donut-label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Legend */
+.chart-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    flex: 1;
+}
+
+.legend-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.legend-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 3px;
+}
+
+.cafe-dot { background: var(--cafe-color); }
+.warkop-dot { background: var(--warkop-color); }
+
+.legend-info {
+    flex: 1;
+}
+
+.legend-name {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.legend-count {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+.legend-bar-track {
+    width: 100%;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 99px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+
+.legend-bar {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 1s ease;
+}
+
+.cafe-bar { background: var(--cafe-color); }
+.warkop-bar { background: var(--warkop-color); }
+
+.legend-pct {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 992px) {
+    .navbar { flex-direction: column; gap: 15px; text-align: center; padding: 20px; }
+    .nav-menu { width: 100%; justify-content: center; flex-wrap: wrap; gap: 10px; }
+    .user-profile { width: 100%; justify-content: center; margin-top: 5px; flex-wrap: wrap; }
+    .chart-body { flex-direction: column; gap: 30px; align-items: center; }
+    .chart-legend { width: 100%; max-width: 340px; }
+}
