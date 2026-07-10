@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('tb_user', function (Blueprint $table) {
             $table->id();
             $table->string('nama_lengkap', 150);
-            $table->string('username', 50)->unique();
+            $table->string('email', 150)->unique();
             $table->string('password')->nullable();
             $table->string('status_role', 50)->default('User');
             $table->timestamp('dibuat_pada')->useCurrent();

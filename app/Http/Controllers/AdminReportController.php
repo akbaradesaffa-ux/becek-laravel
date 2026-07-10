@@ -16,6 +16,7 @@ class AdminReportController extends Controller
         $totalLokasi = Lokasi::count();
         $totalCafe   = Lokasi::where('kategori', 'Cafe')->count();
         $totalWarkop = Lokasi::where('kategori', 'Warkop')->count();
+        $lokasiList  = Lokasi::with('fasilitas')->orderBy('id', 'desc')->get();
 
         $pctCafe   = $totalLokasi > 0 ? round(($totalCafe / $totalLokasi) * 100) : 0;
         $pctWarkop = $totalLokasi > 0 ? round(($totalWarkop / $totalLokasi) * 100) : 0;
@@ -26,6 +27,7 @@ class AdminReportController extends Controller
             'totalLokasi' => $totalLokasi,
             'totalCafe'   => $totalCafe,
             'totalWarkop' => $totalWarkop,
+            'lokasiList'  => $lokasiList,
             'pctCafe'     => $pctCafe,
             'pctWarkop'   => $pctWarkop,
             'namaLogin'   => $namaLogin,

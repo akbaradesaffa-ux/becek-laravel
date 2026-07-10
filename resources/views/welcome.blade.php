@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - BECEK</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=becek-logo-clean-20260709">
+    <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=becek-logo-clean-20260709">
     <link rel="stylesheet" href="{{ asset('css/stylepage1.css') }}">
 </head>
 <body>
@@ -24,8 +26,8 @@
                 <form id="loginForm">
                     @csrf
                     <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="username" placeholder="Masukkan username" required>
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="Masukkan email" autocomplete="email" required>
                     </div>
                     <div class="form-group">
                         <label>Password</label>
@@ -54,12 +56,16 @@
                     <input type="text" name="nama_lengkap" required>
                 </div>
                 <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" name="username" required>
+                    <label>Email</label>
+                    <input type="email" name="email" autocomplete="email" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" required>
+                    <input type="password" name="password" autocomplete="new-password" minlength="6" required>
+                </div>
+                <div class="form-group">
+                    <label>Konfirmasi Password</label>
+                    <input type="password" name="password_confirmation" autocomplete="new-password" minlength="6" required>
                 </div>
                 <button type="submit" class="btn-go" id="signUpBtn">
                     <span class="btn-text">Daftar Akun</span>

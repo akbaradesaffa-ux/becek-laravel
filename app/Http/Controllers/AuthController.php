@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -23,12 +25,19 @@ class AuthController extends Controller
     // POST /login -> proses login (dipanggil via AJAX, response JSON)
     public function login(Request $request)
     {
-        $request->validate([
-            'username' => 'required',
+        $validator = Validator::make($request->all(), [
+            'email'    => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('username', $request->username)->first();
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password belum benar.',
+            ]);
+        }
+
+        $user = User::where('email', $request->email)->first();
         $loginSuccess = false;
 
         if ($user) {
@@ -45,7 +54,7 @@ class AuthController extends Controller
         if ($loginSuccess) {
             session([
                 'id_user'      => $user->id,
-                'username'     => $user->username,
+                'email'        => $user->email,
                 'nama_lengkap' => $user->nama_lengkap,
                 'role'         => $user->status_role,
             ]);
@@ -53,28 +62,44 @@ class AuthController extends Controller
             return response()->json(['success' => true, 'role' => $user->status_role]);
         }
 
-        return response()->json(['success' => false, 'message' => 'Username atau Password salah!']);
+        return response()->json(['success' => false, 'message' => 'Email atau password salah!']);
     }
 
     // POST /register -> proses signup (dipanggil via AJAX, response text biasa)
     public function register(Request $request)
     {
-        $request->validate([
-            'nama_lengkap' => 'required',
-            'username'     => 'required',
-            'password'     => 'required',
+        $validator = Validator::make($request->all(), [
+            'nama_lengkap' => 'required|string|max:150',
+            'email'        => 'required|email|max:150',
+            'password'     => 'required|min:6|confirmed',
         ]);
 
-        if (User::where('username', $request->username)->exists()) {
+        if ($validator->fails()) {
+            if ($validator->errors()->has('password')) {
+                return 'password_invalid';
+            }
+
+            return 'invalid';
+        }
+
+        if (User::where('email', $request->email)->exists()) {
             return 'exists';
         }
 
-        User::create([
+        $payload = [
             'nama_lengkap' => $request->nama_lengkap,
-            'username'     => $request->username,
+            'email'        => strtolower($request->email),
             'password'     => password_hash($request->password, PASSWORD_DEFAULT),
             'status_role'  => 'User',
-        ]);
+        ];
+
+        // Kompatibilitas untuk database lama yang masih punya kolom username.
+        // Kolom ini tidak lagi dipakai di tampilan, tetapi diisi agar constraint lama tidak error.
+        if (Schema::hasColumn('tb_user', 'username')) {
+            $payload['username'] = strtolower($request->email);
+        }
+
+        User::create($payload);
 
         return 'success';
     }

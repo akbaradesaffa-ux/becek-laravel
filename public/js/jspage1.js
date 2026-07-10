@@ -10,9 +10,9 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         if (data.success) {
             // Arahkan berdasarkan role dari server
             if (data.role === 'Administrator') {
-                window.location.href = '/admin/dashboard';
+                window.becekNavigate ? window.becekNavigate('/admin/dashboard') : window.location.href = '/admin/dashboard';
             } else {
-                window.location.href = '/dashboard'; // halaman untuk user biasa
+                window.becekNavigate ? window.becekNavigate('/dashboard') : window.location.href = '/dashboard'; // halaman untuk user biasa
             }
         } else {
             alert(data.message);
@@ -34,7 +34,11 @@ document.getElementById('signUpForm').addEventListener('submit', async function(
             closeSignUpModal();
             document.getElementById('loginForm').reset();
         } else if (result === 'exists') {
-            alert('Username sudah terdaftar!');
+            alert('Email sudah terdaftar!');
+        } else if (result === 'password_invalid') {
+            alert('Password minimal 6 karakter dan konfirmasi password harus sama.');
+        } else if (result === 'invalid') {
+            alert('Data belum lengkap atau format email belum benar.');
         } else {
             alert('Pendaftaran gagal. Coba lagi.');
         }

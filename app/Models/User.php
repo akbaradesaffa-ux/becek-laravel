@@ -11,7 +11,8 @@ class User extends Authenticatable
 
     protected $fillable = [
         'nama_lengkap',
-        'username',
+        'email',
+        'username', // legacy compatibility, tidak dipakai lagi di UI
         'password',
         'status_role',
     ];
@@ -19,6 +20,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class, 'user_id');
+    }
 
     public function getAuthPassword()
     {

@@ -1,0 +1,68 @@
+/* Smooth page transition for BECEK */
+@media (prefers-reduced-motion: no-preference) {
+    .page-transition-active body {
+        opacity: 0;
+        transition: opacity .24s ease;
+        will-change: opacity;
+    }
+
+    .page-transition-active body.page-ready {
+        opacity: 1;
+    }
+
+    .page-transition-active body.page-leaving {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .page-container,
+    .auth-card,
+    .auth-hero-content,
+    .detail-container,
+    .navbar,
+    .main-footer {
+        will-change: transform, opacity;
+    }
+
+    .page-transition-active body.page-ready .hero,
+    .page-transition-active body.page-ready .auth-card,
+    .page-transition-active body.page-ready .filter-panel,
+    .page-transition-active body.page-ready .stats-grid,
+    .page-transition-active body.page-ready .about-card,
+    .page-transition-active body.page-ready .detail-container {
+        animation: becekContentRise .55s ease both;
+    }
+
+    .page-transition-active body.page-ready .grid .cafe-card-wrap {
+        animation: becekCardRise .5s ease both;
+    }
+
+    .page-transition-active body.page-ready .grid .cafe-card-wrap:nth-child(1) { animation-delay: .04s; }
+    .page-transition-active body.page-ready .grid .cafe-card-wrap:nth-child(2) { animation-delay: .08s; }
+    .page-transition-active body.page-ready .grid .cafe-card-wrap:nth-child(3) { animation-delay: .12s; }
+    .page-transition-active body.page-ready .grid .cafe-card-wrap:nth-child(4) { animation-delay: .16s; }
+    .page-transition-active body.page-ready .grid .cafe-card-wrap:nth-child(5) { animation-delay: .20s; }
+    .page-transition-active body.page-ready .grid .cafe-card-wrap:nth-child(6) { animation-delay: .24s; }
+
+    @keyframes becekContentRise {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes becekCardRise {
+        from {
+            opacity: 0;
+            transform: translateY(16px) scale(.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+}
