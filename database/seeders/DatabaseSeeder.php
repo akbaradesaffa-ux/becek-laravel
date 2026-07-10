@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,13 +13,20 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        $payload = [
+            'nama_lengkap' => 'Administrator BECEK',
+            'email' => 'admin@becek.local',
+            'password' => password_hash('admin123', PASSWORD_DEFAULT),
+            'status_role' => 'Administrator',
+        ];
+
+        if (Schema::hasColumn('tb_user', 'username')) {
+            $payload['username'] = 'admin@becek.local';
+        }
+
         User::firstOrCreate(
             ['email' => 'admin@becek.local'],
-            [
-                'nama_lengkap' => 'Administrator BECEK',
-                'password' => password_hash('admin123', PASSWORD_DEFAULT),
-                'status_role' => 'Administrator',
-            ]
+            $payload
         );
     }
 }
