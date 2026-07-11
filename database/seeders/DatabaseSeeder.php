@@ -24,7 +24,7 @@ class DatabaseSeeder extends Seeder
             $payload['username'] = 'admin@becek.local';
         }
 
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@becek.local'],
             $payload
         );
