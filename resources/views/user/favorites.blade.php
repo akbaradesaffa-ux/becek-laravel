@@ -18,7 +18,7 @@
     <title>Tempat Favorit | BECEK</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=becek-logo-clean-20260709">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=becek-logo-clean-20260709">
-    <link rel="stylesheet" href="{{ asset('css/becek-theme.css') }}?v=simple-footer-20260709">
+    <link rel="stylesheet" href="{{ asset('css/becek-theme.css') }}?v=academic-footer-20260716">
     <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=theme-toggle-20260709">
 </head>
 <body>

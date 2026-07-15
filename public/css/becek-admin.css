@@ -1798,3 +1798,163 @@ html[data-theme="light"] .schedule-editor {
         display: none;
     }
 }
+
+/* ===== Academic Identity Footer ===== */
+.admin-footer-grid {
+    grid-template-columns: 1.05fr 1fr 1.35fr;
+}
+
+.admin-footer-project-label {
+    width: fit-content;
+    padding: 8px 12px;
+    border: 1px solid rgba(200, 124, 42, .28);
+    border-radius: 999px;
+    background: rgba(200, 124, 42, .08);
+    color: var(--admin-primary-2);
+    font-family: 'DM Mono', monospace;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.admin-footer-member-list,
+.admin-footer-academic-list {
+    display: grid;
+    gap: 12px;
+}
+
+.admin-footer-member-item,
+.admin-footer-academic-item {
+    display: grid;
+    gap: 3px;
+}
+
+.admin-footer-member-item strong,
+.admin-footer-academic-item strong {
+    color: rgba(255, 245, 229, .86);
+    font-size: .9rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.admin-footer-member-item span {
+    width: auto;
+    display: inline;
+    color: rgba(240, 228, 207, .52);
+    font-family: 'DM Mono', monospace;
+    font-size: .74rem;
+    line-height: 1.4;
+}
+
+.admin-footer-academic-item > span {
+    width: auto;
+    display: inline;
+    color: rgba(240, 228, 207, .48);
+    font-family: 'DM Mono', monospace;
+    font-size: .67rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.admin-footer-domain {
+    min-width: 0;
+    text-align: right;
+}
+
+.admin-footer-domain a {
+    color: var(--admin-primary-2);
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.admin-footer-domain a:hover {
+    color: #fff5e5;
+}
+
+@media (max-width: 920px) {
+    .admin-footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-footer-shell {
+        padding-bottom: 104px;
+    }
+
+    .admin-footer-domain {
+        text-align: left;
+    }
+}
+/* ===== End Academic Identity Footer ===== */
+
+/* ===== Pagination 5 Data per Page ===== */
+.becek-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 24px 0 8px;
+}
+
+.pagination-page,
+.pagination-control {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--admin-border);
+    border-radius: 11px;
+    background: var(--admin-surface);
+    color: var(--admin-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: .82rem;
+    font-weight: 800;
+    line-height: 1;
+    transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.pagination-page:hover,
+.pagination-control:hover {
+    color: var(--admin-text);
+    border-color: rgba(200, 124, 42, .48);
+    transform: translateY(-1px);
+}
+
+.pagination-page.active {
+    border-color: var(--admin-primary-2);
+    background: var(--admin-primary-2);
+    color: #fff;
+    box-shadow: 0 10px 26px rgba(200, 124, 42, .24);
+}
+
+.pagination-control.disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.mini-panel .becek-pagination {
+    margin-top: 18px;
+    margin-bottom: 0;
+}
+
+@media (max-width: 520px) {
+    .becek-pagination {
+        gap: 6px;
+    }
+
+    .pagination-page,
+    .pagination-control {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 8px;
+        border-radius: 10px;
+        font-size: .76rem;
+    }
+}
+/* ===== End Pagination ===== */

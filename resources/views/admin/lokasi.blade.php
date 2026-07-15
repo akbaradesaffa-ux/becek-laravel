@@ -17,7 +17,7 @@
     <title>Manajemen Lokasi & Fasilitas - BECEK</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=becek-logo-clean-20260709">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=becek-logo-clean-20260709">
-    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=daily-operating-hours-20260715">
+    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=academic-footer-20260716">
     <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=advanced-20260709">
 </head>
 <body>
@@ -374,6 +374,6 @@
 
     <script src="{{ asset('js/page-transition.js') }}"></script>
     <script src="{{ asset('js/becek-theme-toggle.js') }}?v=no-footer-logo-20260709"></script>
-    <script src="{{ asset('js/jspage7.js') }}?v=daily-operating-hours-20260715"></script>
+    <script src="{{ asset('js/jspage7.js') }}?v=academic-footer-20260716"></script>
 </body>
 </html>

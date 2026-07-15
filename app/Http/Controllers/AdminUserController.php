@@ -28,7 +28,7 @@ class AdminUserController extends Controller
             });
         }
 
-        $users = $userQuery->get();
+        $users = $userQuery->paginate(5)->withQueryString();
         $namaLogin = session('nama_lengkap', 'Admin');
 
         return view('admin.users', [

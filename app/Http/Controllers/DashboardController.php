@@ -14,14 +14,16 @@ class DashboardController extends Controller
             return redirect()->route('login');
         }
 
-        $recommended = Lokasi::with(['fasilitas', 'jadwalOperasional'])
-            ->where('is_recommended', true)
-            ->orderBy('id', 'desc')
-            ->get();
+        $hasRecommendedPlaces = Lokasi::where('is_recommended', true)->exists();
 
-        $lokasi = $recommended->isNotEmpty()
-            ? $recommended
-            : Lokasi::with(['fasilitas', 'jadwalOperasional'])->orderBy('id', 'desc')->limit(6)->get();
+        $lokasiQuery = Lokasi::with(['fasilitas', 'jadwalOperasional'])
+            ->orderByDesc('id');
+
+        if ($hasRecommendedPlaces) {
+            $lokasiQuery->where('is_recommended', true);
+        }
+
+        $lokasi = $lokasiQuery->paginate(5)->withQueryString();
 
         $namaLengkap = session('nama_lengkap', 'Pengguna');
 
@@ -31,7 +33,7 @@ class DashboardController extends Controller
             'totalWarkop' => Lokasi::where('kategori', 'Warkop')->count(),
             'favoriteIds' => $this->favoriteIds(),
             'namaLengkap' => $namaLengkap,
-            'hasRecommendedPlaces' => $recommended->isNotEmpty(),
+            'hasRecommendedPlaces' => $hasRecommendedPlaces,
             'activePage'  => 'dashboard',
         ]);
     }

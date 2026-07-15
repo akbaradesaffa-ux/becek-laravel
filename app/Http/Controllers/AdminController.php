@@ -20,12 +20,17 @@ class AdminController extends Controller
         $countFavorit = Schema::hasTable('tb_favorit') ? Favorite::count() : 0;
 
         $latestLocations = Lokasi::with(['fasilitas', 'jadwalOperasional'])
-            ->orderBy('id', 'desc')
-            ->limit(5)
-            ->get();
+            ->orderByDesc('id')
+            ->paginate(5, ['*'], 'latest_page')
+            ->withQueryString();
 
         $topLocations = Schema::hasTable('tb_favorit')
-            ? Lokasi::with('jadwalOperasional')->withCount('favorites')->orderByDesc('favorites_count')->limit(5)->get()
+            ? Lokasi::with('jadwalOperasional')
+                ->withCount('favorites')
+                ->orderByDesc('favorites_count')
+                ->orderByDesc('id')
+                ->paginate(5, ['*'], 'top_page')
+                ->withQueryString()
             : collect();
 
         $namaLogin = session('nama_lengkap', 'Admin');

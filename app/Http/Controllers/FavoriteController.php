@@ -20,8 +20,9 @@ class FavoriteController extends Controller
 
         $lokasi = Lokasi::with(['fasilitas', 'jadwalOperasional'])
             ->whereIn('id', $favoriteIds)
-            ->orderBy('id', 'desc')
-            ->get();
+            ->orderByDesc('id')
+            ->paginate(5)
+            ->withQueryString();
 
         return view('user.favorites', [
             'lokasi'      => $lokasi,

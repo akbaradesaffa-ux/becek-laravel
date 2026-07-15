@@ -39,8 +39,13 @@ class AdminLokasiController extends Controller
             });
         }
 
-        $lokasiList = $lokasiQuery->get();
-        $fasilitasList = Fasilitas::orderBy('id', 'desc')->get();
+        $lokasiList = $lokasiQuery
+            ->paginate(5, ['*'], 'lokasi_page')
+            ->withQueryString();
+
+        $fasilitasList = Fasilitas::orderBy('id', 'desc')
+            ->paginate(5, ['*'], 'fasilitas_page')
+            ->withQueryString();
         $fasilitasCheckbox = Fasilitas::orderBy('nama_fasilitas')->get();
         $namaLogin = session('nama_lengkap', 'Admin');
 

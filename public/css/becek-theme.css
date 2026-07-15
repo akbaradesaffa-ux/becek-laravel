@@ -2275,3 +2275,216 @@ html[data-theme="light"] .main-footer.becek-site-footer.becek-figma-footer {
     }
 }
 /* ===== End footer sesuai desain Figma terbaru ===== */
+
+/* ===== Academic Identity Footer ===== */
+.becek-figma-footer-grid {
+    grid-template-columns: 1.05fr 1fr 1.35fr;
+}
+
+.becek-figma-project-label {
+    width: fit-content;
+    padding: 8px 12px;
+    border: 1px solid rgba(200, 124, 42, .28);
+    border-radius: 999px;
+    background: rgba(200, 124, 42, .08);
+    color: #e5a75b;
+    font-family: 'DM Mono', monospace;
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.becek-figma-member-list,
+.becek-figma-academic-list {
+    display: grid;
+    gap: 12px;
+}
+
+.becek-figma-member-item,
+.becek-figma-academic-item {
+    display: grid;
+    gap: 3px;
+}
+
+.becek-figma-member-item strong,
+.becek-figma-academic-item strong {
+    color: rgba(255, 245, 229, .86);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.becek-figma-member-item span {
+    color: rgba(240, 228, 207, .52);
+    font-family: 'DM Mono', monospace;
+    font-size: .74rem;
+    line-height: 1.4;
+}
+
+.becek-figma-academic-item > span {
+    color: rgba(240, 228, 207, .48);
+    font-family: 'DM Mono', monospace;
+    font-size: .67rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.becek-figma-domain {
+    min-width: 0;
+    text-align: right;
+}
+
+.becek-figma-domain a {
+    color: #d99846;
+    overflow-wrap: anywhere;
+    text-decoration: none;
+    transition: color .2s ease;
+}
+
+.becek-figma-domain a:hover {
+    color: #fff5e5;
+}
+
+@media (max-width: 920px) {
+    .becek-figma-footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .becek-figma-domain {
+        text-align: left;
+    }
+}
+/* ===== End Academic Identity Footer ===== */
+
+/* ===== Server Filter and Pagination ===== */
+.explore-search-form {
+    display: flex;
+    align-items: center;
+    max-width: 650px;
+}
+
+.explore-search-form .search-box {
+    padding-right: 92px;
+}
+
+.explore-search-submit {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    bottom: 7px;
+    min-width: 76px;
+    border: 0;
+    border-radius: 13px;
+    background: var(--primary);
+    color: #fff;
+    font-size: .84rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: transform .2s ease, filter .2s ease;
+}
+
+.explore-search-submit:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+}
+
+.explore-filter-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+}
+
+.explore-reset-filter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--muted);
+    background: var(--surface);
+    font-size: .82rem;
+    font-weight: 800;
+    transition: color .2s ease, border-color .2s ease, transform .2s ease;
+}
+
+.explore-reset-filter:hover {
+    color: var(--text);
+    border-color: rgba(200, 124, 42, .42);
+    transform: translateY(-1px);
+}
+
+.becek-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 28px 0 8px;
+}
+
+.pagination-page,
+.pagination-control {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: .82rem;
+    font-weight: 800;
+    line-height: 1;
+    transition: color .2s ease, border-color .2s ease, background .2s ease, transform .2s ease;
+}
+
+.pagination-page:hover,
+.pagination-control:hover {
+    color: var(--text);
+    border-color: rgba(200, 124, 42, .48);
+    transform: translateY(-1px);
+}
+
+.pagination-page.active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 10px 26px rgba(200, 124, 42, .24);
+}
+
+.pagination-control.disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+@media (max-width: 520px) {
+    .explore-search-form .search-box {
+        padding-right: 82px;
+    }
+
+    .explore-search-submit {
+        min-width: 68px;
+    }
+
+    .becek-pagination {
+        gap: 6px;
+    }
+
+    .pagination-page,
+    .pagination-control {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 8px;
+        border-radius: 10px;
+        font-size: .76rem;
+    }
+}
+/* ===== End Server Filter and Pagination ===== */

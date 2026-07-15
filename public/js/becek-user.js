@@ -119,6 +119,8 @@ function setupFavoriteButtons(csrfToken) {
 }
 
 function setupExploreFilter() {
+    if (document.querySelector('[data-server-filter="true"]')) return;
+
     const searchInput = document.getElementById('searchInput');
     const filterButtons = document.querySelectorAll('.filter-btn');
     const cardWraps = document.querySelectorAll('.cafe-card-wrap');
