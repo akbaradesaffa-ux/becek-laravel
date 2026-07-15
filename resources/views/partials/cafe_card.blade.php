@@ -37,7 +37,7 @@
                 <span class="status-mini {{ $statusClass }}">{{ $item->status_operasional }}</span>
             </div>
             <p class="price">{{ $item->rentang_harga }}</p>
-            <p class="hours">🕒 {{ $item->hari_operasional ?: 'Hari belum diatur' }} &bull; {{ $item->jam_operasional_label }}</p>
+            <p class="hours">🕒 Hari ini ({{ $item->hari_operasional_label }}) &bull; {{ $item->jam_operasional_label }}</p>
             <p class="facilities">📌 {{ $fasilitasText }}</p>
             <a href="{{ route('detail', $item->id) }}" class="btn-detail-card">Lihat Detail →</a>
         </div>

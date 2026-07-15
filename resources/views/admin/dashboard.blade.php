@@ -17,7 +17,7 @@
     <title>Dashboard Admin - BECEK</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=becek-logo-clean-20260709">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=becek-logo-clean-20260709">
-    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=theme-motion-20260709">
+    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=admin-mobile-footbar-20260715">
     <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=advanced-20260709">
 </head>
 <body>
@@ -128,7 +128,7 @@
                                 <strong>{{ $item->nama }}</strong>
                                 <span>{{ $item->kategori }} &bull; {{ $item->area ?: 'Area belum diisi' }}</span>
                             </div>
-                            <em>{{ $item->jam_operasional_label }}</em>
+                            <em>{{ $item->hari_operasional_label }} &bull; {{ $item->jam_operasional_label }}</em>
                         </div>
                     @empty
                         <p class="empty-mini">Belum ada lokasi.</p>
@@ -162,6 +162,8 @@
             </section>
         </div>
     </main>
+
+    @include('partials.footer_admin')
 
     <script src="{{ asset('js/page-transition.js') }}"></script>
     <script src="{{ asset('js/becek-theme-toggle.js') }}?v=no-footer-logo-20260709"></script>

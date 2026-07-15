@@ -9,10 +9,72 @@ const mainPreview = document.getElementById('mainPhotoPreview');
 const extraPreview = document.getElementById('extraPhotoPreview');
 const recommendedInput = document.getElementById('lokasiRekomendasi');
 const locationDetailModal = document.getElementById('locationDetailModal');
+const copyMondayScheduleButton = document.getElementById('copyMondaySchedule');
+
+const operationalDays = [
+    ['senin', 'Senin'],
+    ['selasa', 'Selasa'],
+    ['rabu', 'Rabu'],
+    ['kamis', 'Kamis'],
+    ['jumat', 'Jumat'],
+    ['sabtu', 'Sabtu'],
+    ['minggu', 'Minggu'],
+];
 
 function setDetailText(id, value) {
     const element = document.getElementById(id);
     if (element) element.textContent = value || '-';
+}
+
+function parseSchedule(value) {
+    if (!value) return {};
+
+    try {
+        return JSON.parse(value);
+    } catch (error) {
+        console.error('Jadwal operasional tidak dapat dibaca.', error);
+        return {};
+    }
+}
+
+function scheduleTimeLabel(schedule) {
+    if (!schedule) return 'Jadwal belum diatur';
+    if (schedule.status === '24_jam') return '24 Jam';
+    if (schedule.status === 'tutup') return 'Tutup';
+
+    if (schedule.status === 'buka' && schedule.jam_buka && schedule.jam_tutup) {
+        return `${schedule.jam_buka} - ${schedule.jam_tutup}`;
+    }
+
+    return 'Jadwal belum diatur';
+}
+
+function formatScheduleSummary(scheduleData) {
+    const groups = [];
+
+    operationalDays.forEach(([dayKey, dayLabel]) => {
+        const timeLabel = scheduleTimeLabel(scheduleData[dayKey]);
+        const lastGroup = groups[groups.length - 1];
+
+        if (lastGroup && lastGroup.timeLabel === timeLabel) {
+            lastGroup.endLabel = dayLabel;
+            return;
+        }
+
+        groups.push({
+            startLabel: dayLabel,
+            endLabel: dayLabel,
+            timeLabel,
+        });
+    });
+
+    return groups.map((group) => {
+        const dayRange = group.startLabel === group.endLabel
+            ? group.startLabel
+            : `${group.startLabel} - ${group.endLabel}`;
+
+        return `${dayRange}: ${group.timeLabel}`;
+    }).join('\n');
 }
 
 function openLocationDetailModal(button) {
@@ -24,8 +86,7 @@ function openLocationDetailModal(button) {
     setDetailText('detailArea', button.dataset.area || '-');
     setDetailText('detailHarga', button.dataset.harga || '-');
     setDetailText('detailStatus', button.dataset.status || '-');
-    setDetailText('detailHari', button.dataset.hari || '-');
-    setDetailText('detailJam', button.dataset.jam || '-');
+    setDetailText('detailJadwal', formatScheduleSummary(parseSchedule(button.dataset.jadwal)));
     setDetailText('detailRekomendasi', button.dataset.rekomendasi || '-');
     setDetailText('detailFavorit', button.dataset.favorit || '0');
     setDetailText('detailFotoTambahan', `${button.dataset.fotoTambahan || '0'} foto`);
@@ -51,6 +112,52 @@ function closeLocationDetailModal() {
     }
 }
 
+function scheduleRow(dayKey) {
+    return document.querySelector(`[data-schedule-row][data-day="${dayKey}"]`);
+}
+
+function updateScheduleRow(row) {
+    if (!row) return;
+
+    const status = row.querySelector('[data-schedule-status]');
+    const openInput = row.querySelector('[data-schedule-open]');
+    const closeInput = row.querySelector('[data-schedule-close]');
+    const usesTime = status && status.value === 'buka';
+
+    if (openInput) {
+        openInput.disabled = !usesTime;
+        if (usesTime && !openInput.value) openInput.value = '07:00';
+    }
+
+    if (closeInput) {
+        closeInput.disabled = !usesTime;
+        if (usesTime && !closeInput.value) closeInput.value = '23:00';
+    }
+
+    row.classList.toggle('schedule-row-disabled', !usesTime);
+}
+
+function setScheduleForm(scheduleData = {}) {
+    operationalDays.forEach(([dayKey]) => {
+        const row = scheduleRow(dayKey);
+        if (!row) return;
+
+        const data = scheduleData[dayKey] || {
+            status: 'buka',
+            jam_buka: '07:00',
+            jam_tutup: '23:00',
+        };
+        const status = row.querySelector('[data-schedule-status]');
+        const openInput = row.querySelector('[data-schedule-open]');
+        const closeInput = row.querySelector('[data-schedule-close]');
+
+        if (status) status.value = data.status || 'tutup';
+        if (openInput) openInput.value = data.jam_buka || '';
+        if (closeInput) closeInput.value = data.jam_tutup || '';
+        updateScheduleRow(row);
+    });
+}
+
 function openCreateLocationModal() {
     locationForm.reset();
     locationForm.action = locationForm.dataset.storeUrl || '/admin/lokasi/store';
@@ -60,12 +167,16 @@ function openCreateLocationModal() {
     locationMethod.value = 'POST';
     mainPhotoInput.required = true;
     clearPreview();
+    setScheduleForm();
+
     if (recommendedInput) {
         recommendedInput.checked = false;
     }
+
     document.querySelectorAll('[data-facility-checkbox]').forEach((checkbox) => {
         checkbox.checked = false;
     });
+
     locationModal.style.display = 'flex';
 }
 
@@ -83,10 +194,9 @@ function openEditLocationModal(button) {
     document.getElementById('lokasiKategori').value = button.dataset.kategori || '';
     document.getElementById('lokasiArea').value = button.dataset.area || '';
     document.getElementById('lokasiHarga').value = button.dataset.harga || '';
-    document.getElementById('lokasiHari').value = button.dataset.hari || '';
-    document.getElementById('lokasiJamBuka').value = button.dataset.jamBuka || '';
-    document.getElementById('lokasiJamTutup').value = button.dataset.jamTutup || '';
     document.getElementById('lokasiMaps').value = button.dataset.maps || '';
+    setScheduleForm(parseSchedule(button.dataset.jadwal));
+
     if (recommendedInput) {
         recommendedInput.checked = button.dataset.rekomendasi === '1';
     }
@@ -103,6 +213,31 @@ function closeLocationModal() {
     locationModal.style.display = 'none';
     locationForm.reset();
     clearPreview();
+}
+
+function copyMondaySchedule() {
+    const mondayRow = scheduleRow('senin');
+    if (!mondayRow) return;
+
+    const mondayStatus = mondayRow.querySelector('[data-schedule-status]')?.value || 'tutup';
+    const mondayOpen = mondayRow.querySelector('[data-schedule-open]')?.value || '';
+    const mondayClose = mondayRow.querySelector('[data-schedule-close]')?.value || '';
+
+    operationalDays.forEach(([dayKey]) => {
+        if (dayKey === 'senin') return;
+
+        const row = scheduleRow(dayKey);
+        if (!row) return;
+
+        const status = row.querySelector('[data-schedule-status]');
+        const openInput = row.querySelector('[data-schedule-open]');
+        const closeInput = row.querySelector('[data-schedule-close]');
+
+        if (status) status.value = mondayStatus;
+        if (openInput) openInput.value = mondayOpen;
+        if (closeInput) closeInput.value = mondayClose;
+        updateScheduleRow(row);
+    });
 }
 
 function clearPreview() {
@@ -144,6 +279,14 @@ if (extraPhotoInput) {
     extraPhotoInput.addEventListener('change', () => renderPreview(extraPhotoInput, extraPreview, true));
 }
 
+document.querySelectorAll('[data-schedule-status]').forEach((statusSelect) => {
+    statusSelect.addEventListener('change', () => updateScheduleRow(statusSelect.closest('[data-schedule-row]')));
+});
+
+if (copyMondayScheduleButton) {
+    copyMondayScheduleButton.addEventListener('click', copyMondaySchedule);
+}
+
 if (locationModal) {
     locationModal.addEventListener('click', function (event) {
         if (event.target === locationModal) {
@@ -159,3 +302,5 @@ if (locationDetailModal) {
         }
     });
 }
+
+setScheduleForm();

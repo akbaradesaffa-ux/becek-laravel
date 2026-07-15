@@ -17,7 +17,7 @@
     <title>Manajemen Lokasi & Fasilitas - BECEK</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=becek-logo-clean-20260709">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=becek-logo-clean-20260709">
-    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=location-action-clean-20260709">
+    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=daily-operating-hours-20260715">
     <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=advanced-20260709">
 </head>
 <body>
@@ -102,7 +102,7 @@
                         <td>{{ $lokasi->rentang_harga }}</td>
                         <td>
                             <span class="status-pill {{ $lokasi->status_operasional === 'Buka sekarang' ? 'open' : 'closed' }}">{{ $lokasi->status_operasional }}</span><br>
-                            <small class="muted-small">{{ $lokasi->hari_operasional ?: 'Hari belum diatur' }} &bull; {{ $lokasi->jam_operasional_label }}</small>
+                            <small class="muted-small">Hari ini ({{ $lokasi->hari_operasional_label }}) &bull; {{ $lokasi->jam_operasional_label }}</small>
                         </td>
                         <td class="col-fasilitas">
                             @if($lokasi->fasilitas->count())
@@ -128,8 +128,7 @@
                                         data-kategori="{{ e($lokasi->kategori) }}"
                                         data-area="{{ e($lokasi->area ?: '-') }}"
                                         data-harga="{{ e($lokasi->rentang_harga) }}"
-                                        data-hari="{{ e($lokasi->hari_operasional ?: 'Hari belum diatur') }}"
-                                        data-jam="{{ e($lokasi->jam_operasional_label) }}"
+                                        data-jadwal="{{ e(json_encode($lokasi->jadwal_operasional_form, JSON_UNESCAPED_UNICODE)) }}"
                                         data-status="{{ e($lokasi->status_operasional) }}"
                                         data-maps="{{ e($lokasi->link_google_maps) }}"
                                         data-rekomendasi="{{ $lokasi->is_recommended ? 'Ya' : 'Tidak' }}"
@@ -148,9 +147,7 @@
                                         data-kategori="{{ $lokasi->kategori }}"
                                         data-area="{{ e($lokasi->area) }}"
                                         data-harga="{{ e($lokasi->rentang_harga) }}"
-                                        data-hari="{{ e($lokasi->hari_operasional) }}"
-                                        data-jam-buka="{{ $lokasi->jam_buka ? substr($lokasi->jam_buka, 0, 5) : '' }}"
-                                        data-jam-tutup="{{ $lokasi->jam_tutup ? substr($lokasi->jam_tutup, 0, 5) : '' }}"
+                                        data-jadwal="{{ e(json_encode($lokasi->jadwal_operasional_form, JSON_UNESCAPED_UNICODE)) }}"
                                         data-maps="{{ e($lokasi->link_google_maps) }}"
                                         data-rekomendasi="{{ $lokasi->is_recommended ? '1' : '0' }}"
                                         data-fasilitas="{{ $lokasi->fasilitas->pluck('id')->implode(',') }}">
@@ -246,6 +243,8 @@
         </div>
     </main>
 
+    @include('partials.footer_admin')
+
     <div class="modal-overlay" id="locationDetailModal">
         <div class="modal-box modal-box-wide location-detail-modal">
             <div class="detail-modal-head">
@@ -264,8 +263,7 @@
                 <div class="detail-info-card"><span>Area</span><strong id="detailArea">-</strong></div>
                 <div class="detail-info-card"><span>Estimasi Harga</span><strong id="detailHarga">-</strong></div>
                 <div class="detail-info-card"><span>Status</span><strong id="detailStatus">-</strong></div>
-                <div class="detail-info-card"><span>Hari Operasional</span><strong id="detailHari">-</strong></div>
-                <div class="detail-info-card"><span>Jam Operasional</span><strong id="detailJam">-</strong></div>
+                <div class="detail-info-card detail-info-wide"><span>Jadwal Operasional</span><strong id="detailJadwal" class="detail-schedule-list">-</strong></div>
                 <div class="detail-info-card"><span>Rekomendasi</span><strong id="detailRekomendasi">-</strong></div>
                 <div class="detail-info-card"><span>Total Favorit</span><strong id="detailFavorit">0</strong></div>
                 <div class="detail-info-card"><span>Foto Tambahan</span><strong id="detailFotoTambahan">0</strong></div>
@@ -314,21 +312,33 @@
                             <span>★ Tampilkan sebagai rekomendasi di dashboard</span>
                         </label>
                     </div>
-                    <div>
-                        <label class="modal-label">Hari Operasional</label>
-                        <input type="text" name="hari_operasional" id="lokasiHari" class="form-control" placeholder="Contoh: Senin - Minggu">
-                    </div>
-                    <div class="time-row">
-                        <div>
-                            <label class="modal-label">Jam Buka</label>
-                            <input type="time" name="jam_buka" id="lokasiJamBuka" class="form-control">
-                        </div>
-                        <div>
-                            <label class="modal-label">Jam Tutup</label>
-                            <input type="time" name="jam_tutup" id="lokasiJamTutup" class="form-control">
-                        </div>
-                    </div>
                 </div>
+
+                <section class="schedule-editor" aria-labelledby="scheduleEditorTitle">
+                    <div class="schedule-editor-head">
+                        <div>
+                            <label class="modal-label" id="scheduleEditorTitle">Jadwal Operasional per Hari</label>
+                            <p>Atur jam berbeda, 24 jam, atau tutup untuk setiap hari.</p>
+                        </div>
+                        <button type="button" class="btn-copy-schedule" id="copyMondaySchedule">Samakan dengan Senin</button>
+                    </div>
+
+                    <div class="schedule-list">
+                        @foreach(\App\Models\Lokasi::HARI_OPERASIONAL as $dayKey => $dayLabel)
+                            <div class="schedule-row" data-schedule-row data-day="{{ $dayKey }}">
+                                <strong>{{ $dayLabel }}</strong>
+                                <select name="jadwal[{{ $dayKey }}][status]" class="form-control schedule-status" data-schedule-status>
+                                    <option value="buka">Buka</option>
+                                    <option value="24_jam">24 Jam</option>
+                                    <option value="tutup">Tutup</option>
+                                </select>
+                                <input type="time" name="jadwal[{{ $dayKey }}][jam_buka]" class="form-control" value="07:00" aria-label="Jam buka {{ $dayLabel }}" data-schedule-open>
+                                <span class="schedule-separator">sampai</span>
+                                <input type="time" name="jadwal[{{ $dayKey }}][jam_tutup]" class="form-control" value="23:00" aria-label="Jam tutup {{ $dayLabel }}" data-schedule-close>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
 
                 <label class="modal-label">Link Google Maps</label>
                 <input type="url" name="link_maps" id="lokasiMaps" class="form-control" placeholder="https://maps.google.com/..." required>
@@ -364,6 +374,6 @@
 
     <script src="{{ asset('js/page-transition.js') }}"></script>
     <script src="{{ asset('js/becek-theme-toggle.js') }}?v=no-footer-logo-20260709"></script>
-    <script src="{{ asset('js/jspage7.js') }}?v=location-action-clean-20260709"></script>
+    <script src="{{ asset('js/jspage7.js') }}?v=daily-operating-hours-20260715"></script>
 </body>
 </html>

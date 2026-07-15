@@ -7,7 +7,6 @@ use App\Models\Lokasi;
 use App\Models\LokasiFoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class AdminLokasiController extends Controller
@@ -16,7 +15,7 @@ class AdminLokasiController extends Controller
     {
         $search = trim((string) $request->query('q', ''));
 
-        $lokasiQuery = Lokasi::with(['fasilitas', 'fotos'])
+        $lokasiQuery = Lokasi::with(['fasilitas', 'fotos', 'jadwalOperasional'])
             ->withCount('favorites')
             ->orderByDesc('is_recommended')
             ->orderByDesc('id');
@@ -29,6 +28,11 @@ class AdminLokasiController extends Controller
                     ->orWhere('area', 'like', "%{$search}%")
                     ->orWhere('rentang_harga', 'like', "%{$search}%")
                     ->orWhere('hari_operasional', 'like', "%{$search}%")
+                    ->orWhereHas('jadwalOperasional', function ($scheduleQuery) use ($search) {
+                        $scheduleQuery->where('hari', 'like', "%{$search}%")
+                            ->orWhere('jam_buka', 'like', "%{$search}%")
+                            ->orWhere('jam_tutup', 'like', "%{$search}%");
+                    })
                     ->orWhereHas('fasilitas', function ($facilityQuery) use ($search) {
                         $facilityQuery->where('nama_fasilitas', 'like', "%{$search}%");
                     });
@@ -65,12 +69,13 @@ class AdminLokasiController extends Controller
             'rentang_harga' => $data['harga'],
             'link_google_maps' => $data['link_maps'],
             'jalur_foto' => $namaFoto,
-            'hari_operasional' => $data['hari_operasional'] ?? null,
-            'jam_buka' => $data['jam_buka'] ?? null,
-            'jam_tutup' => $data['jam_tutup'] ?? null,
+            'hari_operasional' => 'Jadwal harian',
+            'jam_buka' => null,
+            'jam_tutup' => null,
             'is_recommended' => $request->boolean('is_recommended'),
         ]);
 
+        $this->syncJadwalOperasional($lokasi, $data['jadwal']);
         $this->syncFasilitas($lokasi, $request);
         $this->storeExtraPhotos($lokasi, $request);
 
@@ -79,7 +84,7 @@ class AdminLokasiController extends Controller
 
     public function update(Request $request, int $id)
     {
-        $lokasi = Lokasi::with('fotos')->findOrFail($id);
+        $lokasi = Lokasi::with(['fotos', 'jadwalOperasional'])->findOrFail($id);
         $data = $this->validatedData($request, false);
 
         $payload = [
@@ -88,9 +93,9 @@ class AdminLokasiController extends Controller
             'area' => $data['area'] ?? null,
             'rentang_harga' => $data['harga'],
             'link_google_maps' => $data['link_maps'],
-            'hari_operasional' => $data['hari_operasional'] ?? null,
-            'jam_buka' => $data['jam_buka'] ?? null,
-            'jam_tutup' => $data['jam_tutup'] ?? null,
+            'hari_operasional' => 'Jadwal harian',
+            'jam_buka' => null,
+            'jam_tutup' => null,
             'is_recommended' => $request->boolean('is_recommended'),
         ];
 
@@ -100,6 +105,7 @@ class AdminLokasiController extends Controller
         }
 
         $lokasi->update($payload);
+        $this->syncJadwalOperasional($lokasi, $data['jadwal']);
         $this->syncFasilitas($lokasi, $request);
         $this->storeExtraPhotos($lokasi, $request);
 
@@ -172,21 +178,57 @@ class AdminLokasiController extends Controller
 
     private function validatedData(Request $request, bool $isCreate): array
     {
-        return $request->validate([
+        $rules = [
             'nama' => 'required|string|max:150',
             'kategori' => ['required', Rule::in(['Cafe', 'Warkop'])],
             'area' => 'nullable|string|max:120',
             'harga' => 'required|string|max:100',
-            'hari_operasional' => 'nullable|string|max:120',
-            'jam_buka' => 'nullable|date_format:H:i',
-            'jam_tutup' => 'nullable|date_format:H:i',
+            'jadwal' => 'required|array',
             'is_recommended' => 'nullable|boolean',
             'link_maps' => 'required|url',
             'foto' => ($isCreate ? 'required' : 'nullable') . '|image|max:4096',
             'foto_tambahan.*' => 'nullable|image|max:4096',
             'fasilitas_ids' => 'nullable|array',
             'fasilitas_ids.*' => 'integer|exists:tb_fasilitas,id',
+        ];
+
+        foreach (Lokasi::HARI_OPERASIONAL as $dayKey => $dayLabel) {
+            $rules["jadwal.{$dayKey}.status"] = ['required', Rule::in(['buka', '24_jam', 'tutup'])];
+            $rules["jadwal.{$dayKey}.jam_buka"] = [
+                Rule::requiredIf(fn () => $request->input("jadwal.{$dayKey}.status") === 'buka'),
+                'nullable',
+                'date_format:H:i',
+            ];
+            $rules["jadwal.{$dayKey}.jam_tutup"] = [
+                Rule::requiredIf(fn () => $request->input("jadwal.{$dayKey}.status") === 'buka'),
+                'nullable',
+                'date_format:H:i',
+            ];
+        }
+
+        return $request->validate($rules, [
+            'jadwal.*.jam_buka.required' => 'Jam buka wajib diisi untuk hari yang berstatus buka.',
+            'jadwal.*.jam_tutup.required' => 'Jam tutup wajib diisi untuk hari yang berstatus buka.',
         ]);
+    }
+
+    private function syncJadwalOperasional(Lokasi $lokasi, array $jadwal): void
+    {
+        foreach (array_keys(Lokasi::HARI_OPERASIONAL) as $index => $dayKey) {
+            $daySchedule = $jadwal[$dayKey] ?? ['status' => 'tutup'];
+            $status = $daySchedule['status'] ?? 'tutup';
+
+            $lokasi->jadwalOperasional()->updateOrCreate(
+                ['hari' => $dayKey],
+                [
+                    'urutan' => $index + 1,
+                    'is_buka' => $status !== 'tutup',
+                    'is_24_jam' => $status === '24_jam',
+                    'jam_buka' => $status === 'buka' ? ($daySchedule['jam_buka'] ?? null) : null,
+                    'jam_tutup' => $status === 'buka' ? ($daySchedule['jam_tutup'] ?? null) : null,
+                ]
+            );
+        }
     }
 
     private function syncFasilitas(Lokasi $lokasi, Request $request): void

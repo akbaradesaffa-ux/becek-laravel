@@ -17,7 +17,7 @@
     <title>User Management - BECEK</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=becek-logo-clean-20260709">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=becek-logo-clean-20260709">
-    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=recommend-search-20260709">
+    <link rel="stylesheet" href="{{ asset('css/becek-admin.css') }}?v=admin-mobile-footbar-20260715">
     <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=advanced-20260709">
 </head>
 <body>
@@ -121,6 +121,8 @@
             </table>
         </div>
     </main>
+
+    @include('partials.footer_admin')
 
     <div id="userModal" class="modal-overlay">
         <div class="modal-box">

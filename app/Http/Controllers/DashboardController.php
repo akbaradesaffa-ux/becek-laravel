@@ -14,14 +14,14 @@ class DashboardController extends Controller
             return redirect()->route('login');
         }
 
-        $recommended = Lokasi::with('fasilitas')
+        $recommended = Lokasi::with(['fasilitas', 'jadwalOperasional'])
             ->where('is_recommended', true)
             ->orderBy('id', 'desc')
             ->get();
 
         $lokasi = $recommended->isNotEmpty()
             ? $recommended
-            : Lokasi::with('fasilitas')->orderBy('id', 'desc')->limit(6)->get();
+            : Lokasi::with(['fasilitas', 'jadwalOperasional'])->orderBy('id', 'desc')->limit(6)->get();
 
         $namaLengkap = session('nama_lengkap', 'Pengguna');
 

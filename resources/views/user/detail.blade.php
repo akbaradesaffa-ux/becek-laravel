@@ -19,7 +19,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=becek-logo-clean-20260709">
     <link rel="apple-touch-icon" href="{{ asset('favicon.png') }}?v=becek-logo-clean-20260709">
     <link rel="stylesheet" href="{{ asset('css/becek-theme.css') }}?v=simple-footer-20260709">
-    <link rel="stylesheet" href="{{ asset('css/stylepage4.css') }}?v=advanced-20260709">
+    <link rel="stylesheet" href="{{ asset('css/stylepage4.css') }}?v=daily-operating-hours-20260715">
     <link rel="stylesheet" href="{{ asset('css/page-transition.css') }}?v=advanced-20260709">
 </head>
 <body class="detail-page">
@@ -29,8 +29,50 @@
         <a href="{{ route('explore') }}" class="btn-back">← Kembali ke Explore</a>
 
         <section class="detail-shell">
-            <article class="detail-media-card detail-gallery-card">
-                <img id="mainDetailImage" src="{{ asset('uploads/' . $lokasi->jalur_foto) }}" alt="{{ $lokasi->nama }}">
+            @php
+                $detailPhotoCount = 1 + $lokasi->fotos->count();
+            @endphp
+            <article class="detail-media-card detail-gallery-card" data-detail-carousel tabindex="0" aria-label="Galeri foto {{ $lokasi->nama }}">
+                <div class="detail-carousel-track" data-carousel-track>
+                    <figure class="detail-carousel-slide active" data-carousel-slide aria-hidden="false">
+                        <img src="{{ asset('uploads/' . $lokasi->jalur_foto) }}" alt="Foto utama {{ $lokasi->nama }}" draggable="false">
+                    </figure>
+                    @foreach($lokasi->fotos as $foto)
+                        <figure class="detail-carousel-slide" data-carousel-slide aria-hidden="true">
+                            <img src="{{ asset('uploads/' . $foto->jalur_foto) }}" alt="Foto tambahan {{ $loop->iteration }} {{ $lokasi->nama }}" loading="lazy" draggable="false">
+                        </figure>
+                    @endforeach
+                </div>
+
+                @if($detailPhotoCount > 1)
+                    <button type="button" class="detail-carousel-nav detail-carousel-prev" data-carousel-prev aria-label="Lihat foto sebelumnya">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m15 18-6-6 6-6"></path>
+                        </svg>
+                    </button>
+                    <button type="button" class="detail-carousel-nav detail-carousel-next" data-carousel-next aria-label="Lihat foto berikutnya">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m9 18 6-6-6-6"></path>
+                        </svg>
+                    </button>
+
+                    <div class="detail-carousel-status" aria-live="polite">
+                        <span data-carousel-current>1</span>
+                        <span>/</span>
+                        <span>{{ $detailPhotoCount }}</span>
+                    </div>
+
+                    <div class="detail-carousel-dots" role="tablist" aria-label="Pilih foto">
+                        @for($photoIndex = 0; $photoIndex < $detailPhotoCount; $photoIndex++)
+                            <button type="button"
+                                    class="detail-carousel-dot {{ $photoIndex === 0 ? 'active' : '' }}"
+                                    data-carousel-dot="{{ $photoIndex }}"
+                                    aria-label="Tampilkan foto {{ $photoIndex + 1 }}"
+                                    aria-selected="{{ $photoIndex === 0 ? 'true' : 'false' }}"></button>
+                        @endfor
+                    </div>
+                @endif
+
                 <div class="detail-floating-title">
                     <span class="detail-category">{{ strtoupper($lokasi->kategori) }}</span>
                     <h1>{{ $lokasi->nama }}</h1>
@@ -60,7 +102,12 @@
                     <strong>Operasional</strong>
                     <div>
                         <span class="status-detail {{ $lokasi->status_operasional === 'Buka sekarang' ? 'open' : 'closed' }}">{{ $lokasi->status_operasional }}</span>
-                        <p class="detail-small-text">{{ $lokasi->hari_operasional ?: 'Hari belum diatur' }} &bull; {{ $lokasi->jam_operasional_label }}</p>
+                        <p class="detail-small-text">Hari ini ({{ $lokasi->hari_operasional_label }}) &bull; {{ $lokasi->jam_operasional_label }}</p>
+                        <div class="operational-schedule-list">
+                            @foreach($lokasi->ringkasan_jadwal_operasional as $scheduleLine)
+                                <span class="operational-schedule-item">{{ $scheduleLine }}</span>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
 
@@ -93,32 +140,12 @@
             </aside>
         </section>
 
-        <section class="detail-gallery-strip" aria-label="Galeri foto tempat">
-            <button type="button" class="gallery-thumb active" data-detail-image="{{ asset('uploads/' . $lokasi->jalur_foto) }}">
-                <img src="{{ asset('uploads/' . $lokasi->jalur_foto) }}" alt="Foto utama {{ $lokasi->nama }}">
-            </button>
-            @foreach($lokasi->fotos as $foto)
-                <button type="button" class="gallery-thumb" data-detail-image="{{ asset('uploads/' . $foto->jalur_foto) }}">
-                    <img src="{{ asset('uploads/' . $foto->jalur_foto) }}" alt="Foto tambahan {{ $lokasi->nama }}">
-                </button>
-            @endforeach
-        </section>
     </main>
     @include('partials.footer_user')
 
     <script src="{{ asset('js/page-transition.js') }}"></script>
     <script src="{{ asset('js/becek-theme-toggle.js') }}?v=no-footer-logo-20260709"></script>
     <script src="{{ asset('js/becek-user.js') }}?v=advanced-20260709"></script>
-    <script>
-        document.querySelectorAll('[data-detail-image]').forEach(function (thumb) {
-            thumb.addEventListener('click', function () {
-                const mainImage = document.getElementById('mainDetailImage');
-                if (!mainImage) return;
-                mainImage.src = thumb.getAttribute('data-detail-image');
-                document.querySelectorAll('[data-detail-image]').forEach(item => item.classList.remove('active'));
-                thumb.classList.add('active');
-            });
-        });
-    </script>
+    <script src="{{ asset('js/becek-detail-carousel.js') }}?v=carousel-20260715"></script>
 </body>
 </html>

@@ -18,7 +18,7 @@ class FavoriteController extends Controller
         $namaLengkap = session('nama_lengkap', 'Pengguna');
         $favoriteIds = $this->favoriteIds();
 
-        $lokasi = Lokasi::with('fasilitas')
+        $lokasi = Lokasi::with(['fasilitas', 'jadwalOperasional'])
             ->whereIn('id', $favoriteIds)
             ->orderBy('id', 'desc')
             ->get();

@@ -11,7 +11,7 @@ class LokasiController extends Controller
 {
     public function explore()
     {
-        $lokasi = Lokasi::with('fasilitas')->orderBy('id', 'desc')->get();
+        $lokasi = Lokasi::with(['fasilitas', 'jadwalOperasional'])->orderBy('id', 'desc')->get();
         $categories = $lokasi->pluck('kategori')->filter()->unique()->values();
         $areas = $lokasi->pluck('area')->filter()->unique()->sort()->values();
         $fasilitasMaster = Fasilitas::orderBy('nama_fasilitas')->get();
@@ -30,7 +30,7 @@ class LokasiController extends Controller
 
     public function detail($id)
     {
-        $lokasi = Lokasi::with(['fasilitas', 'fotos'])->find($id);
+        $lokasi = Lokasi::with(['fasilitas', 'fotos', 'jadwalOperasional'])->find($id);
 
         if (!$lokasi) {
             return redirect()->route('dashboard');
