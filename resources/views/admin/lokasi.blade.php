@@ -42,7 +42,7 @@
             <div class="header-title">
                 <p class="eyebrow">Manajemen Tempat</p>
                 <h1>Daftar Lokasi Warkop & Cafe</h1>
-                <p>Kelola lokasi, area, harga, jam operasional, foto, link Google Maps, fasilitas, dan status rekomendasi tempat.</p>
+                <p>Kelola lokasi, area, koordinat, harga, jam operasional, foto, link Google Maps, fasilitas, dan status rekomendasi tempat.</p>
             </div>
             <button class="btn-add" onclick="openCreateLocationModal()">+ Tambah Lokasi Baru</button>
         </div>
@@ -93,7 +93,8 @@
                         </td>
                         <td>
                             <strong>{{ $lokasi->nama }}</strong><br>
-                            <a href="{{ $lokasi->link_google_maps }}" target="_blank" class="link-maps-btn small">↗ Maps</a>
+                            <a href="{{ $lokasi->link_google_maps }}" target="_blank" rel="noopener" class="link-maps-btn small">↗ Maps</a><br>
+                            <small class="coordinate-status {{ $lokasi->has_coordinates ? 'ready' : 'missing' }}">{{ $lokasi->has_coordinates ? '✓ Siap fitur terdekat' : 'Koordinat belum diisi' }}</small>
                         </td>
                         <td>
                             <span class="badge-category {{ strtolower($lokasi->kategori) === 'warkop' ? 'warkop' : '' }}">{{ $lokasi->kategori }}</span>
@@ -131,6 +132,9 @@
                                         data-jadwal="{{ e(json_encode($lokasi->jadwal_operasional_form, JSON_UNESCAPED_UNICODE)) }}"
                                         data-status="{{ e($lokasi->status_operasional) }}"
                                         data-maps="{{ e($lokasi->link_google_maps) }}"
+                                        data-latitude="{{ $lokasi->latitude }}"
+                                        data-longitude="{{ $lokasi->longitude }}"
+                                        data-koordinat="{{ e($lokasi->koordinat_label) }}"
                                         data-rekomendasi="{{ $lokasi->is_recommended ? 'Ya' : 'Tidak' }}"
                                         data-favorit="{{ $lokasi->favorites_count ?? 0 }}"
                                         data-foto="{{ asset('uploads/' . $lokasi->jalur_foto) }}"
@@ -149,6 +153,9 @@
                                         data-harga="{{ e($lokasi->rentang_harga) }}"
                                         data-jadwal="{{ e(json_encode($lokasi->jadwal_operasional_form, JSON_UNESCAPED_UNICODE)) }}"
                                         data-maps="{{ e($lokasi->link_google_maps) }}"
+                                        data-latitude="{{ $lokasi->latitude }}"
+                                        data-longitude="{{ $lokasi->longitude }}"
+                                        data-koordinat="{{ e($lokasi->koordinat_label) }}"
                                         data-rekomendasi="{{ $lokasi->is_recommended ? '1' : '0' }}"
                                         data-fasilitas="{{ $lokasi->fasilitas->pluck('id')->implode(',') }}">
                                     Edit
@@ -261,6 +268,7 @@
             <div class="location-detail-grid">
                 <div class="detail-info-card"><span>Kategori</span><strong id="detailKategori">-</strong></div>
                 <div class="detail-info-card"><span>Area</span><strong id="detailArea">-</strong></div>
+                <div class="detail-info-card"><span>Koordinat</span><strong id="detailKoordinat">-</strong></div>
                 <div class="detail-info-card"><span>Estimasi Harga</span><strong id="detailHarga">-</strong></div>
                 <div class="detail-info-card"><span>Status</span><strong id="detailStatus">-</strong></div>
                 <div class="detail-info-card detail-info-wide"><span>Jadwal Operasional</span><strong id="detailJadwal" class="detail-schedule-list">-</strong></div>
@@ -341,7 +349,28 @@
                 </section>
 
                 <label class="modal-label">Link Google Maps</label>
-                <input type="url" name="link_maps" id="lokasiMaps" class="form-control" placeholder="https://maps.google.com/..." required>
+                <input type="url" name="link_maps" id="lokasiMaps" class="form-control" placeholder="https://www.google.com/maps/place/.../@-6.2000000,106.8166667,17z" required>
+
+                <div class="coordinate-editor">
+                    <div class="coordinate-editor-head">
+                        <div>
+                            <label class="modal-label">Koordinat untuk Fitur Terdekat</label>
+                            <p>Isi latitude dan longitude. Bisa diambil otomatis dari link Google Maps lengkap yang memuat koordinat.</p>
+                        </div>
+                        <button type="button" class="btn-copy-schedule" id="extractCoordinatesButton">Ambil dari Link Maps</button>
+                    </div>
+                    <div class="modal-grid-2 coordinate-grid">
+                        <div>
+                            <label class="modal-label" for="lokasiLatitude">Latitude</label>
+                            <input type="text" inputmode="decimal" name="latitude" id="lokasiLatitude" class="form-control" placeholder="Contoh: -6.2382700">
+                        </div>
+                        <div>
+                            <label class="modal-label" for="lokasiLongitude">Longitude</label>
+                            <input type="text" inputmode="decimal" name="longitude" id="lokasiLongitude" class="form-control" placeholder="Contoh: 106.9755700">
+                        </div>
+                    </div>
+                    <p class="coordinate-feedback" id="coordinateFeedback" role="status" aria-live="polite"></p>
+                </div>
 
                 <label class="modal-label">Foto Utama</label>
                 <input type="file" name="foto" id="lokasiFoto" class="form-control" accept="image/*" required>

@@ -4,6 +4,7 @@
     $displayEmail = session('email');
     $dashboardHref = $isAuthenticated ? route('dashboard') : route('login');
     $exploreHref = $isAuthenticated ? route('explore') : route('login');
+    $nearbyHref = $isAuthenticated ? route('nearby') : route('login');
 @endphp
 
 <nav class="navbar">
@@ -23,6 +24,7 @@
             <ul class="nav-menu">
                 <li class="{{ $activePage === 'dashboard' ? 'active' : '' }}"><a href="{{ $dashboardHref }}">Dashboard</a></li>
                 <li class="{{ $activePage === 'explore' ? 'active' : '' }}"><a href="{{ $exploreHref }}">Explore</a></li>
+                <li class="{{ $activePage === 'nearby' ? 'active' : '' }}"><a href="{{ $nearbyHref }}">Terdekat</a></li>
                 <li class="{{ $activePage === 'about' ? 'active' : '' }}"><a href="{{ route('about') }}">About Us</a></li>
             </ul>
 
@@ -53,7 +55,10 @@
                         </button>
                         <a href="{{ route('favorites.index') }}" class="profile-menu-item">★ Tempat Favorit</a>
                         <button type="button" class="profile-menu-item danger" data-delete-account>Hapus Akun</button>
-                        <a href="{{ route('logout') }}" class="profile-menu-item logout-item">Sign Out</a>
+                        <form action="{{ route('logout') }}" method="POST" class="logout-form">
+                            @csrf
+                            <button type="submit" class="profile-menu-item logout-item">Sign Out</button>
+                        </form>
                     </div>
                 </div>
             @else
@@ -66,6 +71,7 @@
 @if($isAuthenticated)
     <form id="deleteAccountForm" action="{{ route('account.destroy') }}" method="POST" class="hidden-form">
         @csrf
+        @method('DELETE')
         <input type="hidden" name="password" id="deleteAccountPassword">
     </form>
 @endif
@@ -79,6 +85,10 @@
         <span class="mobile-bottom-icon">⌕</span>
         <span>Explore</span>
     </a>
+    <a href="{{ $nearbyHref }}" class="mobile-bottom-item {{ $activePage === 'nearby' ? 'active' : '' }}">
+        <span class="mobile-bottom-icon">⌖</span>
+        <span>Terdekat</span>
+    </a>
     <a href="{{ route('about') }}" class="mobile-bottom-item {{ $activePage === 'about' ? 'active' : '' }}">
         <span class="mobile-bottom-icon">i</span>
         <span>About</span>
@@ -86,5 +96,5 @@
 </nav>
 
 @if(session('account_error'))
-    <script>alert('{{ session('account_error') }}');</script>
+    <script>alert(@json(session('account_error')));</script>
 @endif

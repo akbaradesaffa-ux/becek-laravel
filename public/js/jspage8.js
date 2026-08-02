@@ -17,7 +17,7 @@ function openCreateUserModal() {
     userSubmitButton.textContent = 'Simpan User';
     userPassword.required = true;
     userPasswordConfirmation.required = true;
-    userPassword.placeholder = 'Minimal 6 karakter';
+    userPassword.placeholder = 'Minimal 8 karakter';
     passwordEditNote.style.display = 'none';
     roleLockNote.style.display = 'none';
     document.getElementById('userRole').disabled = false;
@@ -63,9 +63,9 @@ if (userForm) {
         const confirmation = userPasswordConfirmation.value;
 
         if (password || confirmation || userPassword.required) {
-            if (password.length < 6) {
+            if (password.length < 8) {
                 event.preventDefault();
-                alert('Password minimal 6 karakter.');
+                alert('Password minimal 8 karakter.');
                 return;
             }
 

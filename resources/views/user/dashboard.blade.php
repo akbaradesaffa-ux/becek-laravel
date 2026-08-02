@@ -31,6 +31,18 @@
             <p>Panduan kurasi kopi terbaik di jantung Kota Patriot.</p>
         </header>
 
+        <section class="nearby-dashboard-cta">
+            <div>
+                <span class="nearby-dashboard-icon" aria-hidden="true">📍</span>
+                <div>
+                    <p class="eyebrow muted">Cari Berdasarkan Posisi</p>
+                    <h2>Butuh tempat ngopi paling dekat?</h2>
+                    <p>Aktifkan lokasi dan lihat cafe atau warkop dalam radius pilihanmu.</p>
+                </div>
+            </div>
+            <a href="{{ route('nearby') }}">Cari Tempat Terdekat →</a>
+        </section>
+
         <section class="stats-grid" aria-label="Statistik tempat">
             <div class="stat-card">
                 <div class="stat-icon">☕</div>

@@ -26,7 +26,10 @@
             </span>
             <span data-theme-label>Tema Terang</span>
         </button>
-        <button class="btn-logout" onclick="window.location.href='{{ route('logout') }}'">Sign Out</button>
+        <form action="{{ route('logout') }}" method="POST" class="admin-logout-form">
+            @csrf
+            <button type="submit" class="btn-logout">Sign Out</button>
+        </form>
     </div>
 </nav>
 

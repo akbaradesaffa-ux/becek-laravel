@@ -76,11 +76,11 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" name="password" placeholder="Minimal 6 karakter" autocomplete="new-password" minlength="6" required>
+                    <input type="password" name="password" placeholder="Minimal 8 karakter" autocomplete="new-password" minlength="8" required>
                 </div>
                 <div class="form-group">
                     <label>Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" placeholder="Ulangi password" autocomplete="new-password" minlength="6" required>
+                    <input type="password" name="password_confirmation" placeholder="Ulangi password" autocomplete="new-password" minlength="8" required>
                 </div>
                 <button type="submit" class="btn-go" id="signUpBtn">
                     <span class="btn-text">Daftar Akun</span>

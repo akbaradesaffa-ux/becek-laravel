@@ -145,10 +145,10 @@
                 <small id="roleLockNote" class="muted-small" style="display:none;">Akun admin yang sedang aktif tetap dipertahankan sebagai Administrator.</small>
 
                 <label class="modal-label">Password</label>
-                <input type="password" name="password" id="userPassword" class="form-control" placeholder="Minimal 6 karakter" autocomplete="new-password" minlength="6" required>
+                <input type="password" name="password" id="userPassword" class="form-control" placeholder="Minimal 8 karakter" autocomplete="new-password" minlength="8" required>
 
                 <label class="modal-label">Konfirmasi Password</label>
-                <input type="password" name="password_confirmation" id="userPasswordConfirmation" class="form-control" placeholder="Ulangi kata sandi" autocomplete="new-password" minlength="6" required>
+                <input type="password" name="password_confirmation" id="userPasswordConfirmation" class="form-control" placeholder="Ulangi kata sandi" autocomplete="new-password" minlength="8" required>
                 <small id="passwordEditNote" class="muted-small" style="display:none;">Saat edit, kosongkan password jika tidak ingin mengganti kata sandi.</small>
 
                 <div class="modal-buttons">

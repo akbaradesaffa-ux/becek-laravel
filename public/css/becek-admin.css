@@ -1958,3 +1958,78 @@ html[data-theme="light"] .schedule-editor {
     }
 }
 /* ===== End Pagination ===== */
+
+/* Keep the secure POST logout form visually identical to the old button. */
+.admin-logout-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+/* Coordinates for nearby feature */
+.coordinate-status {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.68rem;
+    font-weight: 800;
+}
+
+.coordinate-status.ready {
+    color: #47c98b;
+}
+
+.coordinate-status.missing {
+    color: var(--admin-muted);
+}
+
+.coordinate-editor {
+    margin: 16px 0;
+    padding: 18px;
+    border: 1px solid var(--admin-border);
+    border-radius: 16px;
+    background: rgba(196, 126, 55, 0.05);
+}
+
+.coordinate-editor-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-bottom: 14px;
+}
+
+.coordinate-editor-head .modal-label {
+    margin: 0 0 5px;
+}
+
+.coordinate-editor-head p {
+    color: var(--admin-muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.coordinate-grid {
+    margin-bottom: 0;
+}
+
+.coordinate-feedback {
+    min-height: 20px;
+    margin-top: 9px;
+    color: var(--admin-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.coordinate-feedback.success {
+    color: #47c98b;
+}
+
+.coordinate-feedback.error {
+    color: #ff8f86;
+}
+
+@media (max-width: 720px) {
+    .coordinate-editor-head {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}

@@ -123,7 +123,7 @@
                 </div>
 
                 <div class="detail-actions">
-                    <a href="{{ $lokasi->link_google_maps }}" target="_blank" class="btn-maps">Buka Google Maps ↗</a>
+                    <a href="{{ $lokasi->maps_direction_url }}" target="_blank" rel="noopener noreferrer" class="btn-maps">{{ $lokasi->has_coordinates ? 'Buka Rute Google Maps ↗' : 'Buka Google Maps ↗' }}</a>
                     @php
                         $isFavorited = in_array((int) $lokasi->id, $favoriteIds ?? [], true);
                     @endphp

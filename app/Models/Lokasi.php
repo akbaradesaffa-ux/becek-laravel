@@ -27,6 +27,8 @@ class Lokasi extends Model
         'area',
         'rentang_harga',
         'link_google_maps',
+        'latitude',
+        'longitude',
         'jalur_foto',
         'hari_operasional',
         'jam_buka',
@@ -36,6 +38,8 @@ class Lokasi extends Model
 
     protected $casts = [
         'is_recommended' => 'boolean',
+        'latitude' => 'float',
+        'longitude' => 'float',
     ];
 
     public function fasilitas()
@@ -56,6 +60,31 @@ class Lokasi extends Model
     public function jadwalOperasional()
     {
         return $this->hasMany(JadwalOperasional::class, 'lokasi_id')->orderBy('urutan')->orderBy('id');
+    }
+
+    public function getHasCoordinatesAttribute(): bool
+    {
+        return $this->latitude !== null && $this->longitude !== null;
+    }
+
+    public function getMapsDirectionUrlAttribute(): string
+    {
+        if ($this->has_coordinates) {
+            $destination = rawurlencode(number_format($this->latitude, 7, '.', '') . ',' . number_format($this->longitude, 7, '.', ''));
+
+            return "https://www.google.com/maps/dir/?api=1&destination={$destination}&travelmode=driving";
+        }
+
+        return (string) $this->link_google_maps;
+    }
+
+    public function getKoordinatLabelAttribute(): string
+    {
+        if (!$this->has_coordinates) {
+            return 'Belum diatur';
+        }
+
+        return number_format($this->latitude, 7, '.', '') . ', ' . number_format($this->longitude, 7, '.', '');
     }
 
     public function getFasilitasStringAttribute(): string

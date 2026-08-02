@@ -4,7 +4,14 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const btn = document.getElementById('loginBtn');
     const formData = new FormData(this);
     try {
-        const response = await fetch('/login', { method: 'POST', body: formData });
+        const response = await fetch('/login', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
         const data = await response.json();
 
         if (data.success) {
@@ -27,7 +34,14 @@ document.getElementById('signUpForm').addEventListener('submit', async function(
     e.preventDefault();
     const formData = new FormData(this);
     try {
-        const response = await fetch('/register', { method: 'POST', body: formData });
+        const response = await fetch('/register', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'text/plain',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
         const result = await response.text();
         if (result === 'success') {
             alert('Pendaftaran berhasil! Silakan login.');
@@ -36,7 +50,7 @@ document.getElementById('signUpForm').addEventListener('submit', async function(
         } else if (result === 'exists') {
             alert('Email sudah terdaftar!');
         } else if (result === 'password_invalid') {
-            alert('Password minimal 6 karakter dan konfirmasi password harus sama.');
+            alert('Password minimal 8 karakter dan konfirmasi password harus sama.');
         } else if (result === 'invalid') {
             alert('Data belum lengkap atau format email belum benar.');
         } else {

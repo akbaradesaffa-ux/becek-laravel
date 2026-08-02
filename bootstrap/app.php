@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\AddSecurityHeaders::class,
+        ]);
+
         $middleware->alias([
             'session.auth' => \App\Http\Middleware\EnsureSessionAuthenticated::class,
             'admin.only' => \App\Http\Middleware\EnsureAdminRole::class,

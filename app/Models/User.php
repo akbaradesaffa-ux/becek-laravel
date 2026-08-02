@@ -21,6 +21,14 @@ class User extends Authenticatable
         'password',
     ];
 
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+        ];
+    }
+
     public function favorites()
     {
         return $this->hasMany(Favorite::class, 'user_id');

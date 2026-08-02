@@ -1349,7 +1349,7 @@ input {
         z-index: 9999 !important;
         min-height: 66px;
         display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 6px;
         padding: 8px;
         border: 1px solid rgba(200, 124, 42, 0.20);
@@ -1447,7 +1447,7 @@ input {
 
     .mobile-bottom-nav {
         display: grid !important;
-        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
         position: fixed !important;
         left: 12px !important;
         right: 12px !important;
@@ -2488,3 +2488,388 @@ html[data-theme="light"] .main-footer.becek-site-footer.becek-figma-footer {
     }
 }
 /* ===== End Server Filter and Pagination ===== */
+
+/* Form wrappers for secure POST actions should not alter the navbar layout. */
+.logout-form {
+    width: 100%;
+    margin: 0;
+}
+
+.logout-form .profile-menu-item {
+    font-family: inherit;
+}
+
+/* Nearby cafe & warkop */
+.nearby-hero {
+    padding-bottom: 34px;
+}
+
+.nearby-control-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 22px;
+    align-items: center;
+    margin-bottom: 38px;
+    padding: 26px;
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    background: linear-gradient(145deg, var(--surface), var(--surface-2));
+    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.16);
+}
+
+.nearby-control-copy {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    min-width: 0;
+}
+
+.nearby-control-copy h2,
+.nearby-empty-state h2,
+.nearby-dashboard-cta h2 {
+    color: var(--text);
+    font-family: 'Playfair Display', serif;
+}
+
+.nearby-control-copy h2 {
+    margin: 2px 0 5px;
+    font-size: clamp(1.35rem, 3vw, 1.85rem);
+}
+
+.nearby-control-copy p:last-child {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.nearby-control-copy p.success {
+    color: #65d69a;
+}
+
+.nearby-control-copy p.error {
+    color: #ff938a;
+}
+
+.nearby-pin,
+.nearby-dashboard-icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    color: #fff;
+    background: var(--primary);
+    box-shadow: 0 14px 34px rgba(200, 124, 42, 0.28);
+    font-size: 1.55rem;
+}
+
+.nearby-location-button,
+.nearby-apply-button,
+.btn-route-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    cursor: pointer;
+    font-weight: 800;
+    transition: transform 0.2s, opacity 0.2s, background 0.2s, color 0.2s;
+}
+
+.nearby-location-button {
+    min-height: 48px;
+    padding: 12px 20px;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--primary);
+    box-shadow: 0 12px 30px rgba(200, 124, 42, 0.23);
+}
+
+.nearby-location-button:hover,
+.nearby-apply-button:hover,
+.btn-route-card:hover {
+    transform: translateY(-2px);
+}
+
+.nearby-location-button:disabled,
+.nearby-apply-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+    transform: none;
+}
+
+.nearby-filter-form {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+    gap: 14px;
+    align-items: end;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.nearby-filter-form label {
+    display: grid;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.nearby-select {
+    width: 100%;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    outline: 0;
+    color: var(--text);
+    background: var(--surface);
+    font: inherit;
+}
+
+.nearby-select:focus {
+    border-color: rgba(200, 124, 42, 0.7);
+    box-shadow: 0 0 0 3px rgba(200, 124, 42, 0.12);
+}
+
+.nearby-apply-button {
+    min-height: 46px;
+    padding: 0 20px;
+    border-radius: 14px;
+    color: var(--text);
+    background: rgba(200, 124, 42, 0.14);
+    border: 1px solid rgba(200, 124, 42, 0.28);
+}
+
+.nearby-empty-state {
+    max-width: 720px;
+    margin: 18px auto 52px;
+    padding: 50px 30px;
+    border: 1px dashed rgba(200, 124, 42, 0.32);
+    border-radius: 28px;
+    text-align: center;
+    background: rgba(200, 124, 42, 0.05);
+}
+
+.nearby-empty-state.compact-empty {
+    margin-top: 12px;
+}
+
+.nearby-empty-state h2 {
+    margin: 12px 0 8px;
+    font-size: 1.7rem;
+}
+
+.nearby-empty-state p {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.nearby-empty-icon {
+    font-size: 2.6rem;
+}
+
+.nearby-admin-note {
+    max-width: 590px;
+    margin: 15px auto 0;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+    font-size: 0.88rem;
+}
+
+.nearby-message {
+    margin: -18px 0 28px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    font-weight: 700;
+}
+
+.nearby-message.error {
+    color: #ffb0aa;
+    border: 1px solid rgba(255, 105, 97, 0.28);
+    background: rgba(255, 105, 97, 0.08);
+}
+
+.nearby-results-heading {
+    margin-top: 0;
+}
+
+.nearby-grid .cafe-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.nearby-grid .info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+
+.nearby-grid .facilities {
+    flex: 1;
+}
+
+.distance-highlight {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 12px 0 14px;
+    padding: 9px 11px;
+    border: 1px solid rgba(200, 124, 42, 0.22);
+    border-radius: 12px;
+    color: var(--muted);
+    background: rgba(200, 124, 42, 0.08);
+    font-size: 0.84rem;
+}
+
+.distance-highlight strong {
+    color: var(--primary);
+}
+
+.card-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.btn-route-card {
+    padding: 9px 15px;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--primary);
+    font-size: 0.84rem;
+}
+
+.nearby-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin: 34px 0 8px;
+    color: var(--muted);
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.nearby-pagination a,
+.nearby-pagination .disabled {
+    padding: 9px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+}
+
+.nearby-pagination a {
+    color: var(--primary);
+    background: var(--surface);
+}
+
+.nearby-pagination .disabled {
+    opacity: 0.45;
+}
+
+.nearby-spinner {
+    width: 17px;
+    height: 17px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #fff;
+    border-radius: 999px;
+    animation: nearby-spin 0.8s linear infinite;
+}
+
+@keyframes nearby-spin {
+    to { transform: rotate(360deg); }
+}
+
+.nearby-dashboard-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 26px;
+    padding: 22px 24px;
+    border: 1px solid rgba(200, 124, 42, 0.25);
+    border-radius: 24px;
+    background: linear-gradient(115deg, rgba(200, 124, 42, 0.13), rgba(200, 124, 42, 0.03));
+}
+
+.nearby-dashboard-cta > div {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.nearby-dashboard-cta h2 {
+    margin: 2px 0 4px;
+    font-size: 1.45rem;
+}
+
+.nearby-dashboard-cta p:last-child {
+    color: var(--muted);
+}
+
+.nearby-dashboard-cta > a {
+    flex: 0 0 auto;
+    padding: 11px 17px;
+    border-radius: 999px;
+    color: #fff;
+    background: var(--primary);
+    font-weight: 800;
+}
+
+@media (max-width: 840px) {
+    .nearby-control-card {
+        grid-template-columns: 1fr;
+        padding: 21px;
+    }
+
+    .nearby-location-button {
+        width: 100%;
+    }
+
+    .nearby-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .nearby-dashboard-cta,
+    .nearby-dashboard-cta > div {
+        align-items: flex-start;
+    }
+
+    .nearby-dashboard-cta {
+        flex-direction: column;
+    }
+
+    .nearby-dashboard-cta > a {
+        width: 100%;
+        text-align: center;
+    }
+
+    .nearby-pagination {
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+}
+
+@media (max-width: 520px) {
+    .nearby-control-copy {
+        align-items: flex-start;
+    }
+
+    .nearby-pin,
+    .nearby-dashboard-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 15px;
+        font-size: 1.25rem;
+    }
+
+    .nearby-dashboard-cta > div {
+        flex-direction: column;
+    }
+
+    .card-action-row > a {
+        width: 100%;
+    }
+}

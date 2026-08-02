@@ -10,6 +10,11 @@ const extraPreview = document.getElementById('extraPhotoPreview');
 const recommendedInput = document.getElementById('lokasiRekomendasi');
 const locationDetailModal = document.getElementById('locationDetailModal');
 const copyMondayScheduleButton = document.getElementById('copyMondaySchedule');
+const mapsInput = document.getElementById('lokasiMaps');
+const latitudeInput = document.getElementById('lokasiLatitude');
+const longitudeInput = document.getElementById('lokasiLongitude');
+const extractCoordinatesButton = document.getElementById('extractCoordinatesButton');
+const coordinateFeedback = document.getElementById('coordinateFeedback');
 
 const operationalDays = [
     ['senin', 'Senin'],
@@ -84,6 +89,7 @@ function openLocationDetailModal(button) {
     setDetailText('detailKode', button.dataset.kode || '-');
     setDetailText('detailKategori', button.dataset.kategori || '-');
     setDetailText('detailArea', button.dataset.area || '-');
+    setDetailText('detailKoordinat', button.dataset.koordinat || 'Belum diatur');
     setDetailText('detailHarga', button.dataset.harga || '-');
     setDetailText('detailStatus', button.dataset.status || '-');
     setDetailText('detailJadwal', formatScheduleSummary(parseSchedule(button.dataset.jadwal)));
@@ -168,6 +174,7 @@ function openCreateLocationModal() {
     mainPhotoInput.required = true;
     clearPreview();
     setScheduleForm();
+    setCoordinateFeedback('');
 
     if (recommendedInput) {
         recommendedInput.checked = false;
@@ -195,6 +202,9 @@ function openEditLocationModal(button) {
     document.getElementById('lokasiArea').value = button.dataset.area || '';
     document.getElementById('lokasiHarga').value = button.dataset.harga || '';
     document.getElementById('lokasiMaps').value = button.dataset.maps || '';
+    if (latitudeInput) latitudeInput.value = button.dataset.latitude || '';
+    if (longitudeInput) longitudeInput.value = button.dataset.longitude || '';
+    setCoordinateFeedback('');
     setScheduleForm(parseSchedule(button.dataset.jadwal));
 
     if (recommendedInput) {
@@ -213,6 +223,7 @@ function closeLocationModal() {
     locationModal.style.display = 'none';
     locationForm.reset();
     clearPreview();
+    setCoordinateFeedback('');
 }
 
 function copyMondaySchedule() {
@@ -263,6 +274,67 @@ function renderPreview(input, target, multiple = false) {
     });
 }
 
+function setCoordinateFeedback(message, type = '') {
+    if (!coordinateFeedback) return;
+
+    coordinateFeedback.textContent = message;
+    coordinateFeedback.classList.remove('success', 'error');
+    if (type) coordinateFeedback.classList.add(type);
+}
+
+function extractCoordinatesFromMapsUrl(url) {
+    if (!url) return null;
+
+    let decodedUrl = url;
+    try {
+        decodedUrl = decodeURIComponent(url);
+    } catch (error) {
+        decodedUrl = url;
+    }
+
+    const patterns = [
+        /@(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)/,
+        /[?&](?:q|query|destination|center)=(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)/i,
+        /\/(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)(?:[/?]|$)/,
+    ];
+
+    for (const pattern of patterns) {
+        const match = decodedUrl.match(pattern);
+        if (!match) continue;
+
+        const latitude = Number(match[1]);
+        const longitude = Number(match[2]);
+
+        if (Number.isFinite(latitude)
+            && Number.isFinite(longitude)
+            && latitude >= -90
+            && latitude <= 90
+            && longitude >= -180
+            && longitude <= 180) {
+            return { latitude, longitude };
+        }
+    }
+
+    return null;
+}
+
+function extractCoordinates() {
+    if (!mapsInput || !latitudeInput || !longitudeInput) return;
+
+    const coordinates = extractCoordinatesFromMapsUrl(mapsInput.value.trim());
+    if (!coordinates) {
+        setCoordinateFeedback(
+            'Koordinat tidak ditemukan. Buka Google Maps, salin link lengkap yang memuat tanda @latitude,longitude, atau isi manual.',
+            'error'
+        );
+        return;
+    }
+
+    latitudeInput.value = coordinates.latitude.toFixed(7);
+    longitudeInput.value = coordinates.longitude.toFixed(7);
+    setCoordinateFeedback('Koordinat berhasil diambil dari link Google Maps.', 'success');
+}
+
 function confirmAdminDelete(message) {
     return window.confirm(message || 'Yakin ingin menghapus data ini?');
 }
@@ -285,6 +357,10 @@ document.querySelectorAll('[data-schedule-status]').forEach((statusSelect) => {
 
 if (copyMondayScheduleButton) {
     copyMondayScheduleButton.addEventListener('click', copyMondaySchedule);
+}
+
+if (extractCoordinatesButton) {
+    extractCoordinatesButton.addEventListener('click', extractCoordinates);
 }
 
 if (locationModal) {

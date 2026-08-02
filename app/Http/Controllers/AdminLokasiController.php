@@ -7,6 +7,7 @@ use App\Models\Lokasi;
 use App\Models\LokasiFoto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class AdminLokasiController extends Controller
@@ -73,6 +74,8 @@ class AdminLokasiController extends Controller
             'area' => $data['area'] ?? null,
             'rentang_harga' => $data['harga'],
             'link_google_maps' => $data['link_maps'],
+            'latitude' => $data['latitude'] ?? null,
+            'longitude' => $data['longitude'] ?? null,
             'jalur_foto' => $namaFoto,
             'hari_operasional' => 'Jadwal harian',
             'jam_buka' => null,
@@ -98,18 +101,25 @@ class AdminLokasiController extends Controller
             'area' => $data['area'] ?? null,
             'rentang_harga' => $data['harga'],
             'link_google_maps' => $data['link_maps'],
+            'latitude' => $data['latitude'] ?? null,
+            'longitude' => $data['longitude'] ?? null,
             'hari_operasional' => 'Jadwal harian',
             'jam_buka' => null,
             'jam_tutup' => null,
             'is_recommended' => $request->boolean('is_recommended'),
         ];
 
+        $oldMainPhoto = null;
         if ($request->hasFile('foto')) {
-            $this->deleteUploadFile($lokasi->jalur_foto);
+            $oldMainPhoto = $lokasi->jalur_foto;
             $payload['jalur_foto'] = $this->storeUploadedFile($request->file('foto'));
         }
 
         $lokasi->update($payload);
+
+        if ($oldMainPhoto) {
+            $this->deleteUploadFile($oldMainPhoto);
+        }
         $this->syncJadwalOperasional($lokasi, $data['jadwal']);
         $this->syncFasilitas($lokasi, $request);
         $this->storeExtraPhotos($lokasi, $request);
@@ -131,19 +141,17 @@ class AdminLokasiController extends Controller
         return redirect()->back()->with('success', $message);
     }
 
-    public function destroy($id)
+    public function destroy(int $id)
     {
-        $lokasi = Lokasi::with('fotos')->find($id);
+        $lokasi = Lokasi::with('fotos')->findOrFail($id);
+        $files = collect([$lokasi->jalur_foto])
+            ->merge($lokasi->fotos->pluck('jalur_foto'))
+            ->filter()
+            ->values();
 
-        if ($lokasi) {
-            $this->deleteUploadFile($lokasi->jalur_foto);
+        $lokasi->delete();
 
-            foreach ($lokasi->fotos as $foto) {
-                $this->deleteUploadFile($foto->jalur_foto);
-            }
-
-            $lokasi->delete();
-        }
+        $files->each(fn (string $fileName) => $this->deleteUploadFile($fileName));
 
         return redirect()->route('admin.lokasi')->with('success', 'Lokasi berhasil dihapus.');
     }
@@ -151,38 +159,48 @@ class AdminLokasiController extends Controller
     public function deleteFoto(int $id)
     {
         $foto = LokasiFoto::findOrFail($id);
-        $this->deleteUploadFile($foto->jalur_foto);
+        $fileName = $foto->jalur_foto;
         $foto->delete();
+        $this->deleteUploadFile($fileName);
 
         return redirect()->route('admin.lokasi')->with('success', 'Foto tambahan berhasil dihapus.');
     }
 
     public function storeFasilitas(Request $request)
     {
-        $nama = trim($request->input('nama_fasilitas_baru', ''));
+        $request->merge([
+            'nama_fasilitas_baru' => trim((string) $request->input('nama_fasilitas_baru')),
+        ]);
 
-        if (empty($nama)) {
-            return redirect()->route('admin.lokasi');
-        }
+        $data = $request->validate([
+            'nama_fasilitas_baru' => ['required', 'string', 'max:50'],
+        ]);
 
-        if (Fasilitas::where('nama_fasilitas', $nama)->exists()) {
+        if (Fasilitas::where('nama_fasilitas', $data['nama_fasilitas_baru'])->exists()) {
             return redirect()->route('admin.lokasi', ['status' => 'exists']);
         }
 
-        Fasilitas::create(['nama_fasilitas' => $nama]);
+        Fasilitas::create(['nama_fasilitas' => $data['nama_fasilitas_baru']]);
 
         return redirect()->route('admin.lokasi', ['status' => 'success']);
     }
 
-    public function deleteFasilitas($id)
+    public function deleteFasilitas(int $id)
     {
-        Fasilitas::destroy($id);
+        $fasilitas = Fasilitas::findOrFail($id);
+        $fasilitas->lokasi()->detach();
+        $fasilitas->delete();
 
         return redirect()->route('admin.lokasi')->with('success', 'Fasilitas berhasil dihapus.');
     }
 
     private function validatedData(Request $request, bool $isCreate): array
     {
+        $request->merge([
+            'latitude' => $this->normalizeCoordinate($request->input('latitude')),
+            'longitude' => $this->normalizeCoordinate($request->input('longitude')),
+        ]);
+
         $rules = [
             'nama' => 'required|string|max:150',
             'kategori' => ['required', Rule::in(['Cafe', 'Warkop'])],
@@ -190,9 +208,12 @@ class AdminLokasiController extends Controller
             'harga' => 'required|string|max:100',
             'jadwal' => 'required|array',
             'is_recommended' => 'nullable|boolean',
-            'link_maps' => 'required|url',
-            'foto' => ($isCreate ? 'required' : 'nullable') . '|image|max:4096',
-            'foto_tambahan.*' => 'nullable|image|max:4096',
+            'link_maps' => ['required', 'url:http,https', 'max:2048'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90', 'required_with:longitude'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180', 'required_with:latitude'],
+            'foto' => [($isCreate ? 'required' : 'nullable'), 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'foto_tambahan' => ['nullable', 'array', 'max:8'],
+            'foto_tambahan.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
             'fasilitas_ids' => 'nullable|array',
             'fasilitas_ids.*' => 'integer|exists:tb_fasilitas,id',
         ];
@@ -214,7 +235,22 @@ class AdminLokasiController extends Controller
         return $request->validate($rules, [
             'jadwal.*.jam_buka.required' => 'Jam buka wajib diisi untuk hari yang berstatus buka.',
             'jadwal.*.jam_tutup.required' => 'Jam tutup wajib diisi untuk hari yang berstatus buka.',
+            'latitude.required_with' => 'Latitude wajib diisi jika longitude diisi.',
+            'longitude.required_with' => 'Longitude wajib diisi jika latitude diisi.',
+            'latitude.between' => 'Latitude harus berada antara -90 dan 90.',
+            'longitude.between' => 'Longitude harus berada antara -180 dan 180.',
         ]);
+    }
+
+    private function normalizeCoordinate(mixed $value): mixed
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $normalized = str_replace(',', '.', trim((string) $value));
+
+        return $normalized === '' ? null : $normalized;
     }
 
     private function syncJadwalOperasional(Lokasi $lokasi, array $jadwal): void
@@ -249,8 +285,8 @@ class AdminLokasiController extends Controller
             File::makeDirectory($uploadPath, 0755, true);
         }
 
-        $safeName = preg_replace('/[^A-Za-z0-9_.-]/', '_', $file->getClientOriginalName());
-        $fileName = time() . '_' . uniqid() . '_' . $safeName;
+        $extension = strtolower($file->extension() ?: 'jpg');
+        $fileName = Str::uuid()->toString() . '.' . $extension;
         $file->move($uploadPath, $fileName);
 
         return $fileName;
